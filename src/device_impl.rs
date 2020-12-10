@@ -59,7 +59,7 @@ where
         let mode1 = self.read_register(Register::MODE1)?;
         if (mode1 & BitFlagMode1::Restart as u8) != 0 {
             self.enable()?;
-            delay.delay_us(500_u16);
+            delay.try_delay_us(500_u16).map_err(|_| Error::DelayFailed as Error<E>)?;
             let previous = self.config;
             let config = previous.with_high(BitFlagMode1::Restart);
             self.write_mode1(config)?;
@@ -114,7 +114,7 @@ where
             ProgrammableAddress::AllCall => Register::ALL_CALL_ADDR,
         };
         self.i2c
-            .write(self.address, &[reg, a.0])
+            .try_write(self.address, &[reg, a.0])
             .map_err(Error::I2C)
     }
 
@@ -267,7 +267,7 @@ where
         }
 
         self.i2c
-            .write(self.address, &[Register::PRE_SCALE, prescale])
+            .try_write(self.address, &[Register::PRE_SCALE, prescale])
             .map_err(Error::I2C)?;
 
         if was_oscillator_running {

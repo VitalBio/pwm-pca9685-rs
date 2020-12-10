@@ -25,7 +25,7 @@ travis-ci = { repository = "eldruin/pwm-pca9685-rs", branch = "master" }
 coveralls = { repository = "eldruin/pwm-pca9685-rs", branch = "master", service = "github" }
 
 [dependencies]
-embedded-hal = "0.2"
+embedded-hal = "1.0.0-alpha.4"
 nb = "1"
 
 [dev-dependencies]

@@ -20,6 +20,8 @@ pub enum Error<E> {
     I2C(E),
     /// Invalid input data provided
     InvalidInputData,
+    /// Delay failed, but the original reason is hidden
+    DelayFailed
 }
 
 /// Output channel selection

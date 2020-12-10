@@ -92,7 +92,24 @@ where
             data[i * 4 + 4] = (*off >> 8) as u8;
         }
         self.enable_auto_increment()?;
-        self.i2c.write(self.address, &data).map_err(Error::I2C)
+        self.i2c.try_write(self.address, &data).map_err(Error::I2C)
+    }
+
+    /// Set the `ON` and `OFF` counter for several channels in sequence at once.
+    pub fn set_many_on_off(&mut self, first_channel: Channel, on: &[u16], off: &[u16]) -> Result<(), Error<E>> {
+        let mut data = [0; 65];
+        data[0] = get_register_on(first_channel);
+        for (i, (on, off)) in on.iter().zip(off).enumerate() {
+            if *on > 4095 || *off > 4095 {
+                return Err(Error::InvalidInputData);
+            }
+            data[i * 4 + 1] = *on as u8;
+            data[i * 4 + 2] = (*on >> 8) as u8;
+            data[i * 4 + 3] = *off as u8;
+            data[i * 4 + 4] = (*off >> 8) as u8;
+        }
+        self.enable_auto_increment()?;
+        self.i2c.try_write(self.address, &data[0..1+4*on.len()]).map_err(Error::I2C)
     }
 }
 
